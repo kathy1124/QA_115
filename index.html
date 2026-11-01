@@ -11,6 +11,7 @@
       --success: #10B981;
       --danger: #EF4444;
       --warning: #F59E0B;
+      --info: #0EA5E9;
       --bg: #F8FAFC;
       --card: #FFFFFF;
       --text: #1E293B;
@@ -388,14 +389,14 @@
         <div style="color:var(--text-muted);font-size:0.9rem" id="result-sub"></div>
       </div>
       <div class="result-stats">
-        <div class="stat-box correct"><div class="stat-num" id="res-correct">0</div><div class="stat-label">&#9989; &#31572;&#23565;</div></div>
-        <div class="stat-box wrong"><div class="stat-num" id="res-wrong">0</div><div class="stat-label">&#10060; &#31572;&#37406;</div></div>
-        <div class="stat-box skip"><div class="stat-num" id="res-skip">0</div><div class="stat-label">&#9197;&#65039; &#36339;&#36942;</div></div>
-        <div class="stat-box"><div class="stat-num" id="res-total">0</div><div class="stat-label">&#128221; &#32317;&#39064;&#25976;</div></div>
+        <div class="stat-box correct"><div class="stat-num" id="res-correct">0</div><div class="stat-label">&#9989;答對</div></div>
+        <div class="stat-box wrong"><div class="stat-num" id="res-wrong">0</div><div class="stat-label">&#10060; 答錯</div></div>
+        <div class="stat-box skip"><div class="stat-num" id="res-skip">0</div><div class="stat-label">&#9197; 跳過</div></div>
+        <div class="stat-box"><div class="stat-num" id="res-total">0</div><div class="stat-label">&#128221; 總題數</div></div>
       </div>
       <div class="result-actions">
         <button class="btn btn-primary" onclick="retryWrong()">&#127919; 練習錯題</button>
-        <button class="btn btn-secondary" onclick="retryAll()">&#128260; &#37325;&#26032;&#32244;&#32722;</button>
+        <button class="btn btn-secondary" onclick="retryAll()">&#128260; 重新練習</button>
         <button class="btn btn-secondary" onclick="goHome()">&#127968; 返回主畫面</button>
       </div>
     </div>
@@ -515,10 +516,17 @@ function questionStatsText(qId) {
   var accuracy = stats.attempts > 0 ? Math.round(stats.correct / stats.attempts * 100) : 0;
   return '測驗 ' + stats.attempts + ' 次｜正確率 ' + accuracy + '%';
 }
+function questionAccuracy(qId) {
+  var stats = getQuestionStats(qId);
+  return stats.attempts > 0 ? stats.correct / stats.attempts : 0;
+}
 function renderQuestionBank() {
   var sourceName = SOURCE_NAMES[bankSource];
   var questions = ALL_QUESTIONS.filter(function(q) {
     return bankSource === 'all' || q.source === sourceName;
+  });
+  questions.sort(function(a, b) {
+    return questionAccuracy(a.id) - questionAccuracy(b.id);
   });
   var list = document.getElementById('question-list');
   list.innerHTML = '';
